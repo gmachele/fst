@@ -1,1 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatch Receiving Form</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="FST-003.png" alt="Company Logo" class="logo">
+        </header>
+        <h1 >Export Form</h1>
+        
+        <form id="dispatch-form" enctype="multipart/form-data">
+            <!-- Dispatch Information -->
+            <div class="form-group">
+                <label for="dispatch-number">Dispatch Number:</label>
+                <input type="text" id="dispatch-number" name="dispatch-number" required>
+            </div>
 
+            <div class="form-group">
+                <label for="date-dispatch">Date of Dispatch:</label>
+                <input type="date" id="date-dispatch" name="date-dispatch" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sender">Sender:</label>
+                <input type="text" id="sender" name="sender" required>
+            </div>
+
+            <div class="form-group">
+                <label for="receiver-name">Receiver Name:</label>
+                <input type="text" id="receiver-name" name="receiver-name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="receiver-contact">Receiver Contact:</label>
+                <input type="tel" id="receiver-contact" name="receiver-contact" required>
+            </div>
+
+            <!-- Package Details -->
+            <div class="form-group">
+                <label for="package-description">Package Description:</label>
+                <input type="text" id="package-description" name="package-description" required>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" required>
+            </div>
+
+            <div class="form-group">
+                <label for="condition">Condition upon Receipt:</label>
+                <select id="condition" name="condition" required>
+                    <option value="intact">Intact</option>
+                    <option value="damaged">Damaged</option>
+                    <option value="missing-items">Missing Items</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- Pictures to be Taken -->
+            <h3>Pictures to be Taken:</h3>
+            <div class="form-group">
+                <label for="package-label">Package Label/Serial Number:</label>
+                <input type="file" id="package-label" name="package-label" accept="image/*" capture="camera">
+                <img id="preview-package-label" class="preview" alt="Package Label Preview">
+            </div>
+
+            <div class="form-group">
+                <label for="package-condition">Package Condition:</label>
+                <input type="file" id="package-condition" name="package-condition" accept="image/*" capture="camera">
+                <img id="preview-package-condition" class="preview" alt="Package Condition Preview">
+            </div>
+
+            <div class="form-group">
+                <label for="damaged-parts">Damaged Parts (if any):</label>
+                <input type="file" id="damaged-parts" name="damaged-parts" accept="image/*" capture="camera">
+                <img id="preview-damaged-parts" class="preview" alt="Damaged Parts Preview">
+            </div>
+
+            <div class="form-group">
+                <label for="additional-pictures">Additional Notes:</label>
+                <input type="file" id="additional-pictures" name="additional-pictures" accept="image/*" capture="camera">
+                <img id="preview-additional-pictures" class="preview" alt="Additional Notes Preview">
+            </div>
+
+            <!-- Receiver’s Acknowledgment -->
+            <div class="form-group">
+                <label for="receiver-signature">Receiver’s Signature:</label>
+                <input type="text" id="receiver-signature" name="receiver-signature" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date-receipt">Date of Receipt:</label>
+                <input type="date" id="date-receipt" name="date-receipt" required>
+            </div>
+
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
