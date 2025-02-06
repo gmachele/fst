@@ -133,7 +133,7 @@ document.getElementById("dispatch-form").addEventListener("submit", function (ev
     const options = {
         filename: `${rmaNumber}_dispatch_receiving_form.pdf`, 
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true }, 
+        html2canvas: { scale: 5, useCORS: true }, 
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
     };
 
