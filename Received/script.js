@@ -120,6 +120,23 @@ document.getElementById("dispatch-form").addEventListener("submit", function (ev
     // Create a wrapper div for proper margins
     const originalContent = document.querySelector(".container");
     const clonedContent = originalContent.cloneNode(true); // Clone the content
+    
+    // Copy selected values manually
+    document.querySelectorAll("select").forEach((select, index) => {
+        const clonedSelect = clonedContent.querySelectorAll("select")[index];
+        if (clonedSelect) {
+            clonedSelect.value = select.value;
+        }
+    });
+
+
+    // Copy description inputs manually
+document.querySelectorAll("input[type='text']").forEach((input, index) => {
+    const clonedInput = clonedContent.querySelectorAll("input[type='text']")[index];
+    if (clonedInput) {
+        clonedInput.value = input.value;
+    }
+});
 
     // Apply margins using padding (instead of jsPDF margins)
     clonedContent.style.padding = "20mm";  // Adds 20mm margin inside the PDF
@@ -133,8 +150,10 @@ document.getElementById("dispatch-form").addEventListener("submit", function (ev
     const options = {
         filename: `${rmaNumber}_dispatch_receiving_form.pdf`, 
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true }, 
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        html2canvas: { scale: 5, letterRendering: true, useCORS: true }, 
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait",margin: [10, 10, 10, 10] }
+
+
     };
 
     html2pdf().from(tempDiv).set(options).save().then(() => {
