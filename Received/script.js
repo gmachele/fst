@@ -1,86 +1,143 @@
-// Function to preview an image
-function previewImage(input, previewId) {
-    const file = input.files[0];
-    const preview = document.getElementById(previewId);
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    } else {
-        preview.src = '';
-        preview.style.display = 'none';
+// Quantity input handling
+function generateInputs() {
+    const quantity = document.getElementById("quantity").value;
+    const container = document.getElementById("input-container");
+    container.innerHTML = ""; // Clear previous inputs
+
+    for (let i = 1; i <= quantity; i++) {
+        const div = document.createElement("div");
+        div.classList.add("form-group");
+
+        // Static Receiver Label
+        const receiverLabel = document.createElement("label");
+        receiverLabel.textContent = `Receiver ${i}:`;
+        receiverLabel.setAttribute("for", `item-type-${i}`);
+
+        // Dropdown for Item Type (Cylinder, Valve, Other)
+        const itemTypeContainer = document.createElement("div");
+        itemTypeContainer.classList.add("item-type-container");
+
+        const selectLabel = document.createElement("label");
+        selectLabel.textContent = `Item Type:`;
+        selectLabel.setAttribute("for", `item-type-${i}`);
+
+        const select = document.createElement("select");
+        select.id = `item-type-${i}`;
+        select.name = `item-type-${i}`;
+        select.required = true;
+
+        const defaultOption = new Option("Select an option", "", true, true);
+        defaultOption.disabled = true;
+        const option1 = new Option("Cylinder", "cylinder");
+        const option2 = new Option("Valve", "valve");
+        const option3 = new Option("Other", "other");
+
+        select.appendChild(defaultOption);
+        select.appendChild(option1);
+        select.appendChild(option2);
+        select.appendChild(option3);
+
+        itemTypeContainer.appendChild(selectLabel);
+        itemTypeContainer.appendChild(select);
+
+        // Always visible description input
+        const descContainer = document.createElement("div");
+        descContainer.classList.add("description-container");
+
+        const descLabel = document.createElement("label");
+        descLabel.textContent = "Description:";
+        descLabel.setAttribute("for", `description-${i}`);
+
+        const descInput = document.createElement("input");
+        descInput.type = "text";
+        descInput.id = `description-${i}`;
+        descInput.name = `description-${i}`;
+        descInput.placeholder = "Enter description";
+
+        descContainer.appendChild(descLabel);
+        descContainer.appendChild(descInput);
+
+        // Image upload inputs (3 images)
+        const imagesContainer = document.createElement("div");
+        imagesContainer.classList.add("images-container");
+
+        const imagesLabel = document.createElement("label");
+        imagesLabel.textContent = "Upload Images:";
+        imagesLabel.setAttribute("for", `image-${i}-1`);
+
+        const imageInputsContainer = document.createElement("div");
+        imageInputsContainer.classList.add("image-inputs");
+
+        for (let j = 1; j <= 3; j++) {
+            const imageInput = document.createElement("input");
+            imageInput.type = "file";
+            imageInput.id = `image-${i}-${j}`;
+            imageInput.name = `image-${i}-${j}`;
+            imageInput.accept = "image/*";
+            imageInput.required = j === 1; // Make the first image input required
+            imageInputsContainer.appendChild(imageInput);
+
+            // Image preview container
+            const previewContainer = document.createElement("div");
+            previewContainer.classList.add("preview-container");
+            const previewImage = document.createElement("img");
+            previewImage.classList.add("preview");
+            previewContainer.appendChild(previewImage);
+
+            // Append preview container to the image input
+            imageInput.addEventListener("change", function (e) {
+                previewImage.src = URL.createObjectURL(e.target.files[0]);
+                previewImage.style.display = "block"; // Show the preview
+            });
+
+            // Append preview container after image input
+            imageInputsContainer.appendChild(previewContainer);
+        }
+
+        imagesContainer.appendChild(imagesLabel);
+        imagesContainer.appendChild(imageInputsContainer);
+
+        // Append elements to container
+        div.appendChild(receiverLabel);
+        div.appendChild(itemTypeContainer);
+        div.appendChild(descContainer);
+        div.appendChild(imagesContainer);
+        container.appendChild(div);
     }
 }
 
-// Add event listeners for file inputs
-document.getElementById('package-label').addEventListener('change', function () {
-    previewImage(this, 'preview-package-label');
-});
-document.getElementById('package-condition').addEventListener('change', function () {
-    previewImage(this, 'preview-package-condition');
-});
-document.getElementById('damaged-parts').addEventListener('change', function () {
-    previewImage(this, 'preview-damaged-parts');
-});
-document.getElementById('additional-pictures').addEventListener('change', function () {
-    previewImage(this, 'preview-additional-pictures');
-});
 
-// Form submission with PDF generation
-document.getElementById('dispatch-form').addEventListener('submit', function (event) {
-    event.preventDefault();
+document.getElementById("dispatch-form").addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent form from reloading
 
-    const formData = new FormData(this);
-    const values = {};
-    formData.forEach((value, key) => {
-        values[key] = value;
+    // Get the RMA number
+    const rmaNumber = document.getElementById("rma-number").value.trim();
+    if (!rmaNumber) {
+        alert("Please enter a valid RMA number.");
+        return;
+    }
+
+    // Create a wrapper div for proper margins
+    const originalContent = document.querySelector(".container");
+    const clonedContent = originalContent.cloneNode(true); // Clone the content
+
+    // Apply margins using padding (instead of jsPDF margins)
+    clonedContent.style.padding = "20mm";  // Adds 20mm margin inside the PDF
+
+    // Create a temporary div and add cloned content
+    const tempDiv = document.createElement("div");
+    tempDiv.appendChild(clonedContent);
+    document.body.appendChild(tempDiv);
+
+    // Convert to PDF
+    const options = {
+        filename: `${rmaNumber}_dispatch_receiving_form.pdf`, 
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true }, 
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    };
+
+    html2pdf().from(tempDiv).set(options).save().then(() => {
+        document.body.removeChild(tempDiv); // Remove temporary div after PDF generation
     });
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    doc.setFontSize(12);
-    let y = 10;
-
-    doc.text('Dispatch Receiving Form', 105, y, { align: 'center' });
-    y += 10;
-
-    // Add form text
-    for (const key in values) {
-        if (key.startsWith("file")) continue; // Skip file inputs
-        doc.text(`${key.replace(/-/g, ' ')}: ${values[key]}`, 10, y);
-        y += 10;
-        if (y > 280) {
-            doc.addPage();
-            y = 10;
-        }
-    }
-
-    // Add images to PDF
-    const imageIds = [
-        { id: 'preview-package-label', label: 'Package Label' },
-        { id: 'preview-package-condition', label: 'Package Condition' },
-        { id: 'preview-damaged-parts', label: 'Damaged Parts' },
-        { id: 'preview-additional-pictures', label: 'Additional Notes' },
-    ];
-
-    for (const { id, label } of imageIds) {
-        const img = document.getElementById(id);
-        if (img.src) {
-            y += 10;
-            doc.text(label, 10, y);
-            y += 5;
-            doc.addImage(img.src, 'JPEG', 10, y, 50, 50);
-            y += 55;
-            if (y > 280) {
-                doc.addPage();
-                y = 10;
-            }
-        }
-    }
-
-    doc.save(`dispatch_receiving_form_${values['dispatch-number'] || 'unknown'}.pdf`);
 });
