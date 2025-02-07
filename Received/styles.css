@@ -41,7 +41,7 @@ input, select {
 }
 
 .preview {
-    max-width: 200px;
+    max-width: 300px;
     margin-top: 10px;
     display: none;
     border: 1px solid #ddd;

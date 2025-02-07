@@ -57,12 +57,12 @@ function generateInputs() {
         descContainer.appendChild(descLabel);
         descContainer.appendChild(descInput);
 
-        // Image upload inputs (3 images)
+        // Camera capture inputs (3 images)
         const imagesContainer = document.createElement("div");
         imagesContainer.classList.add("images-container");
 
         const imagesLabel = document.createElement("label");
-        imagesLabel.textContent = "Upload Images:";
+        imagesLabel.textContent = "Capture Images:";
         imagesLabel.setAttribute("for", `image-${i}-1`);
 
         const imageInputsContainer = document.createElement("div");
@@ -74,6 +74,7 @@ function generateInputs() {
             imageInput.id = `image-${i}-${j}`;
             imageInput.name = `image-${i}-${j}`;
             imageInput.accept = "image/*";
+            imageInput.capture = "environment"; // Opens camera
             imageInput.required = j === 1; // Make the first image input required
             imageInputsContainer.appendChild(imageInput);
 
@@ -150,10 +151,8 @@ document.querySelectorAll("input[type='text']").forEach((input, index) => {
     const options = {
         filename: `${rmaNumber}_dispatch_receiving_form.pdf`, 
         image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 5, letterRendering: true, useCORS: true }, 
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait",margin: [10, 10, 10, 10] }
-
-
+        html2canvas: { scale: 2, useCORS: true }, 
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
     };
 
     html2pdf().from(tempDiv).set(options).save().then(() => {
