@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create New Google Doc</title>
+    <script>
+        function createNewDoc() {
+            var data = document.getElementById("inputData").value;
+
+            // Sending data to Google Script
+            var scriptURL = "https://script.google.com/macros/s/AKfycbwMwHLOpHQMsNHJ_jrv3vnZV2o0Kwc2XBbaD959_hDCufYzJW1Hck3xctldAuqtCVEK/exec";  // Replace with your Google Script URL
+            var params = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ "data": data })
+            };
+
+            fetch(scriptURL, params)
+                .then(response => response.json())
+                .then(response => {
+                    alert("New document created successfully!");
+                })
+                .catch(error => {
+                    alert("Error creating document: " + error);
+                });
+        }
+    </script>
+</head>
+<body>
+    <h1>Create New Google Doc</h1>
+    <input type="text" id="inputData" placeholder="Enter text to add to new Google Doc" />
+    <button onclick="createNewDoc()">Create New Doc</button>
+</body>
+</html>

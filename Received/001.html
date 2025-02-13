@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatch Receiving Form</title>
+
+    <style>
+        /* General styles for on-screen and printing */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .preview {
+            max-width: 300px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background: #5cb85c;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: #4cae4c;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                background: #fff;
+                color: #000;
+                font-size: 12px;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+                padding: 10px;
+                max-width: 100%;
+            }
+
+            .preview {
+                display: block; /* Ensure images are visible */
+                margin-bottom: 10px;
+                max-width: 100%;
+            }
+
+            .btn {
+                display: none; /* Hide buttons in the print view */
+            }
+        }
+
+        .logo {
+            height: 100px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #input-container {
+            margin-left: 20px;
+            padding-left: 10px;
+            border-left: 2px solid #ccc; /* Optional: Adds a visual separator */
+        }
+
+        .item-type-container, .description-container {
+            margin-left: 20px;  /* Add indentation */
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="FST-003.png" alt="Company Logo" class="logo">
+        </header>
+        <h1>Receiving Form</h1>
+
+        <form id="dispatch-form" enctype="multipart/form-data">
+            <!-- Dispatch Information -->
+            <div class="form-group">
+                <label for="rma-number">RMA Number:</label>
+                <input type="text" id="rma-number" name="rma-number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date-dispatch">Date of receival:</label>
+                <input type="date" id="date-dispatch" name="date-dispatch" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sender">Client:</label>
+                <input type="text" id="sender" name="sender" required>
+            </div>
+
+            <div class="form-group">
+                <label for="client-contact">Client Contact:</label>
+                <input type="text" id="client-contact" name="client-contact" required>
+            </div>
+
+            <div class="form-group">
+                <label for="receiver-name">Receiver Name:</label>
+                <select id="receiver-name" name="receiver-name" required>
+                    <option value="" disabled selected>Select Receiver</option>
+                    <option value="jack">Jack</option>
+                    <option value="abram">Abram</option>
+                    <option value="lovedelia">Lovedelia</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantity of item(s) received:</label>
+                <input type="number" id="quantity" name="quantity" required oninput="generateInputs()">
+            </div>
+
+            <div id="input-container"></div>
+
+            <!-- Receiver’s Acknowledgment -->
+            <div class="form-group">
+                <label for="receiver-signature">Receiver’s Signature:</label>
+                <input type="text" id="receiver-signature" name="receiver-signature" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date-receipt">Date of Receipt:</label>
+                <input type="date" id="date-receipt" name="date-receipt" required>
+            </div>
+
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Quantity input handling
+        function generateInputs() {
+            const quantity = document.getElementById("quantity").value;
+            const container = document.getElementById("input-container");
+            container.innerHTML = ""; // Clear previous inputs
+
+            for (let i = 1; i <= quantity; i++) {
+                const div = document.createElement("div");
+                div.classList.add("form-group");
+
+                // Static Receiver Label
+                const receiverLabel = document.createElement("label");
+                receiverLabel.textContent = `Receiver ${i}:`;
+                receiverLabel.setAttribute("for", `item-type-${i}`);
+
+                // Dropdown for Item Type (Cylinder, Valve, Other)
+                const itemTypeContainer = document.createElement("div");
+                itemTypeContainer.classList.add("item-type-container");
+
+                const selectLabel = document.createElement("label");
+                selectLabel.textContent = `Item Type:`;
+                selectLabel.setAttribute("for", `item-type-${i}`);
+
+                const select = document.createElement("select");
+                select.id = `item-type-${i}`;
+                select.name = `item-type-${i}`;
+                select.required = true;
+
+                const defaultOption = new Option("Select an option", "", true, true);
+                defaultOption.disabled = true;
+                const option1 = new Option("Cylinder", "cylinder");
+                const option2 = new Option("Valve", "valve");
+                const option3 = new Option("Other", "other");
+
+                select.appendChild(defaultOption);
+                select.appendChild(option1);
+                select.appendChild(option2);
+                select.appendChild(option3);
+
+                itemTypeContainer.appendChild(selectLabel);
+                itemTypeContainer.appendChild(select);
+
+                // Always visible description input
+                const descContainer = document.createElement("div");
+                descContainer.classList.add("description-container");
+
+                const descLabel = document.createElement("label");
+                descLabel.textContent = "Description:";
+                descLabel.setAttribute("for", `description-${i}`);
+
+                const descInput = document.createElement("input");
+                descInput.type = "text";
+                descInput.id = `description-${i}`;
+                descInput.name = `description-${i}`;
+                descInput.placeholder = "Enter description";
+
+                descContainer.appendChild(descLabel);
+                descContainer.appendChild(descInput);
+
+                // Camera capture inputs (3 images)
+                const imagesContainer = document.createElement("div");
+                imagesContainer.classList.add("images-container");
+
+                const imagesLabel = document.createElement("label");
+                imagesLabel.textContent = "Capture Images:";
+                imagesLabel.setAttribute("for", `image-${i}-1`);
+
+                const imageInputsContainer = document.createElement("div");
+                imageInputsContainer.classList.add("image-inputs");
+
+                for (let j = 1; j <= 3; j++) {
+                    const imageInput = document.createElement("input");
+                    imageInput.type = "file";
+                    imageInput.id = `image-${i}-${j}`;
+                    imageInput.name = `image-${i}-${j}`;
+                    imageInput.accept = "image/*";
+                    imageInput.capture = "environment"; // Opens camera
+                    imageInput.required = j === 1; // Make the first image input required
+                    imageInputsContainer.appendChild(imageInput);
+
+                    // Image preview container
+                    const previewContainer = document.createElement("div");
+                    previewContainer.classList.add("preview-container");
+                    const previewImage = document.createElement("img");
+                    previewImage.classList.add("preview");
+                    previewContainer.appendChild(previewImage);
+
+                    // Append preview container to the image input
+                    imageInput.addEventListener("change", function (e) {
+                        previewImage.src = URL.createObjectURL(e.target.files[0]);
+                        previewImage.style.display = "block"; // Show the preview
+                    });
+
+                    // Append preview container after image input
+                    imageInputsContainer.appendChild(previewContainer);
+                }
+
+                imagesContainer.appendChild(imagesLabel);
+                imagesContainer.appendChild(imageInputsContainer);
+
+                // Append elements to container
+                div.appendChild(receiverLabel);
+                div.appendChild(itemTypeContainer);
+                div.appendChild(descContainer);
+                div.appendChild(imagesContainer);
+                container.appendChild(div);
+            }
+        }
+
+        document.getElementById("dispatch-form").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent form from reloading
+
+            var formData = new FormData(event.target);
+
+            // Send the data to Google Apps Script
+            fetch('https://script.google.com/macros/s/AKfycbzlrUHXS6JQM8UxLXzqimuCh6lE2ButosyiQZ0bzGjPYiDYO6PMm0XFfBJXNefbvGA/exec', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => alert('Form submitted successfully. A PDF will be sent to your email.'))
+            .catch(error => alert('Error: ' + error));
+        });
+    </script>
+</body>
+</html>

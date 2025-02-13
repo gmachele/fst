@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatch Receiving Form</title>
+    <style>
+        /* Your existing CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background: #5cb85c;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background: #4cae4c;
+        }
+        .logo {
+            height: 100px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #input-container {
+            margin-left: 20px;
+            padding-left: 10px;
+            border-left: 2px solid #ccc;
+        }
+        .item-type-container, .description-container {
+            margin-left: 20px;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="FST-003.png" alt="Company Logo" class="logo">
+        </header>
+        <h1>Receiving Form</h1>
+
+        <form id="dispatch-form">
+            <div class="form-group">
+                <label for="rma-number">RMA Number:</label>
+                <input type="text" id="rma-number" name="rma-number" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date-dispatch">Date of Receival:</label>
+                <input type="date" id="date-dispatch" name="date-dispatch" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sender">Client:</label>
+                <input type="text" id="sender" name="sender" required>
+            </div>
+
+            <div class="form-group">
+                <label for="client-contact">Client Contact:</label>
+                <input type="text" id="client-contact" name="client-contact" required>
+            </div>
+
+            <div class="form-group">
+                <label for="receiver-name">Receiver Name:</label>
+                <select id="receiver-name" name="receiver-name" required>
+                    <option value="" disabled selected>Select Receiver</option>
+                    <option value="jack">Jack</option>
+                    <option value="abram">Abram</option>
+                    <option value="lovedelia">Lovedelia</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantity of item(s) received:</label>
+                <input type="number" id="quantity" name="quantity" required oninput="generateInputs()">
+            </div>
+
+            <div id="input-container"></div>
+
+            <div class="form-group">
+                <label for="receiver-signature">Receiver’s Signature:</label>
+                <input type="text" id="receiver-signature" name="receiver-signature" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date-receipt">Date of Receipt:</label>
+                <input type="date" id="date-receipt" name="date-receipt" required>
+            </div>
+
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Quantity input handling
+        function generateInputs() {
+            // ... (Your existing generateInputs function code)
+            const quantity = document.getElementById("quantity").value;
+            const container = document.getElementById("input-container");
+            container.innerHTML = ""; // Clear previous inputs
+
+            for (let i = 1; i <= quantity; i++) {
+                const div = document.createElement("div");
+                div.classList.add("form-group");
+
+                // Item Type Dropdown
+                const itemTypeContainer = document.createElement("div");
+                itemTypeContainer.classList.add("item-type-container");
+
+                const selectLabel = document.createElement("label");
+                selectLabel.textContent = `Item Type ${i}:`;
+                selectLabel.setAttribute("for", `item-type-${i}`);
+
+                const select = document.createElement("select");
+                select.id = `item-type-${i}`;
+                select.name = `item-type-${i}`;
+                select.required = true;
+
+                const defaultOption = new Option("Select an option", "", true, true);
+                defaultOption.disabled = true;
+                const option1 = new Option("Cylinder", "cylinder");
+                const option2 = new Option("Valve", "valve");
+                const option3 = new Option("Other", "other");
+
+                select.appendChild(defaultOption);
+                select.appendChild(option1);
+                select.appendChild(option2);
+                select.appendChild(option3);
+
+                itemTypeContainer.appendChild(selectLabel);
+                itemTypeContainer.appendChild(select);
+
+                // Description Input
+                const descContainer = document.createElement("div");
+                descContainer.classList.add("description-container");
+
+                const descLabel = document.createElement("label");
+                descLabel.textContent = "Description:";
+                descLabel.setAttribute("for", `description-${i}`);
+
+                const descInput = document.createElement("input");
+                descInput.type = "text";
+                descInput.id = `description-${i}`;
+                descInput.name = `description-${i}`;
+                descInput.placeholder = "Enter description";
+
+                descContainer.appendChild(descLabel);
+                descContainer.appendChild(descInput);
+
+                // Append elements to container
+                div.appendChild(itemTypeContainer);
+                div.appendChild(descContainer);
+                container.appendChild(div);
+            }
+        }
+
+
+
+        // Form submission handling (jQuery AJAX)
+        $("#dispatch-form").submit(function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            $.ajax({
+                url: "https://script.google.com/macros/s/AKfycbzliNkHyBvBcQBnSRuyQK-P7vLPrTqxO0LuIRVtStxceNdzClVQUTfeE9r9vJ7rglE/exec", // **REPLACE THIS WITH YOUR SCRIPT URL**
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    if (response.success) {
+                        alert("Form submitted successfully! Document created. URL: " + response.message);
+                        $("#dispatch-form")[0].reset();//reset form after successful submission
+                        $("#input-container").empty();//clear the added input fields
+                    } else {
+                        alert("Error: " + response.error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert("AJAX Error: " + status + " - " + error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
